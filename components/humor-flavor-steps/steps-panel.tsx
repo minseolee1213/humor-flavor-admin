@@ -47,13 +47,15 @@ export async function HumorFlavorStepsPanel({
 
   if (lookupError) {
     return (
-      <section className="rounded-lg border border-red-200 bg-red-50/80 p-4 dark:border-red-900 dark:bg-red-950/30">
-        <h2 className="font-semibold text-red-900 dark:text-red-100">
-          Prompt chain (steps)
-        </h2>
-        <p className="mt-2 text-sm text-red-800 dark:text-red-200">
-          Could not load steps or lookup tables: {lookupError.message}
-        </p>
+      <section className="app-card overflow-hidden border-red-500/20">
+        <div className="app-card-inner border-red-500/10 bg-red-500/5">
+          <h2 className="app-h2 text-red-800 dark:text-red-200">
+            Prompt chain (steps)
+          </h2>
+          <p className="app-lead mt-2 text-red-700 dark:text-red-300">
+            Could not load steps or lookup tables: {lookupError.message}
+          </p>
+        </div>
       </section>
     );
   }
@@ -96,152 +98,153 @@ export async function HumorFlavorStepsPanel({
     stepTypes.length > 0;
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-lg border border-indigo-200 bg-indigo-50/80 px-4 py-3 dark:border-indigo-900 dark:bg-indigo-950/40">
-        <h2 className="text-lg font-semibold text-indigo-950 dark:text-indigo-100">
-          Prompt chain
-        </h2>
-        <p className="mt-1 text-sm text-indigo-900/90 dark:text-indigo-200/90">
-          Humor flavor <strong>{flavorSlug}</strong> is an ordered sequence of
-          LLM steps. Each row is one step in the chain; runs execute{" "}
-          <strong>from top to bottom</strong> using the{" "}
-          <strong className="font-mono">order_by</strong> column (1 = first).
-        </p>
-      </div>
+    <section className="space-y-8">
+      <div className="app-card overflow-hidden">
+        <div className="border-b border-zinc-200/80 bg-gradient-to-r from-zinc-50 to-transparent px-5 py-4 dark:border-white/[0.06] dark:from-white/[0.04] dark:to-transparent">
+          <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
+            Prompt chain
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+              {flavorSlug}
+            </span>{" "}
+            runs as an ordered sequence of LLM steps. Execution is{" "}
+            <strong className="font-mono text-red-600/90 dark:text-red-400">
+              top → bottom
+            </strong>{" "}
+            by <span className="font-mono text-xs">order_by</span> (1 = first).
+          </p>
+        </div>
 
-      {steps.length === 0 ? (
-        <p className="rounded-md border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-400">
-          No steps yet. Add the first step below — it will become step 1.
-        </p>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full min-w-[56rem] text-left text-sm">
-            <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
-              <tr>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  #
-                </th>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  Step type
-                </th>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  Model
-                </th>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  In → Out
-                </th>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  Summary
-                </th>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  Order
-                </th>
-                <th className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-              {steps.map((step, index) => {
-                const idStr = String(step.id);
-                const isFirst = index === 0;
-                const isLast = index === steps.length - 1;
-                const summary =
-                  step.description?.trim() ||
-                  [step.llm_system_prompt, step.llm_user_prompt]
-                    .filter(Boolean)
-                    .join(" ")
-                    .slice(0, 80) ||
-                  "—";
-                return (
-                  <tr
-                    key={step.id}
-                    className="align-top bg-white dark:bg-zinc-950"
-                  >
-                    <td className="px-3 py-3 font-mono text-zinc-600 dark:text-zinc-400">
-                      {step.order_by}
-                    </td>
-                    <td className="px-3 py-3 text-zinc-800 dark:text-zinc-200">
-                      {stepTM.get(step.humor_flavor_step_type_id) ?? "—"}
-                    </td>
-                    <td className="px-3 py-3 text-zinc-800 dark:text-zinc-200">
-                      {modelM.get(step.llm_model_id) ?? "—"}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-xs text-zinc-600 dark:text-zinc-400">
-                      {inM.get(step.llm_input_type_id) ?? step.llm_input_type_id}
-                      <span className="mx-1 text-zinc-400">→</span>
-                      {outM.get(step.llm_output_type_id) ??
-                        step.llm_output_type_id}
-                    </td>
-                    <td className="max-w-xs px-3 py-3 text-zinc-600 dark:text-zinc-400">
-                      <span className="line-clamp-2" title={summary}>
-                        {summary}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex flex-col gap-1">
-                        <form action={reorderHumorFlavorStep} className="inline">
-                          <input
-                            type="hidden"
-                            name="humor_flavor_id"
-                            value={humorFlavorId}
-                          />
-                          <input type="hidden" name="step_id" value={idStr} />
-                          <input type="hidden" name="direction" value="up" />
-                          <button
-                            type="submit"
-                            disabled={isFirst}
-                            className="w-full rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-600 dark:bg-zinc-900"
-                          >
-                            Move up
-                          </button>
-                        </form>
-                        <form action={reorderHumorFlavorStep} className="inline">
-                          <input
-                            type="hidden"
-                            name="humor_flavor_id"
-                            value={humorFlavorId}
-                          />
-                          <input type="hidden" name="step_id" value={idStr} />
-                          <input type="hidden" name="direction" value="down" />
-                          <button
-                            type="submit"
-                            disabled={isLast}
-                            className="w-full rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-600 dark:bg-zinc-900"
-                          >
-                            Move down
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex flex-col gap-2">
+        {steps.length === 0 ? (
+          <div className="px-5 py-12 text-center">
+            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              No steps yet
+            </p>
+            <p className="app-lead mt-2">
+              Add the first step below — it becomes step 1.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="app-table min-w-[56rem]">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Step type</th>
+                  <th>Model</th>
+                  <th>In → Out</th>
+                  <th>Summary</th>
+                  <th>Order</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {steps.map((step, index) => {
+                  const idStr = String(step.id);
+                  const isFirst = index === 0;
+                  const isLast = index === steps.length - 1;
+                  const summary =
+                    step.description?.trim() ||
+                    [step.llm_system_prompt, step.llm_user_prompt]
+                      .filter(Boolean)
+                      .join(" ")
+                      .slice(0, 80) ||
+                    "—";
+                  return (
+                    <tr key={step.id} className="align-top">
+                      <td className="font-mono text-zinc-500 dark:text-zinc-400">
+                        {step.order_by}
+                      </td>
+                      <td className="font-medium text-zinc-900 dark:text-zinc-100">
+                        {stepTM.get(step.humor_flavor_step_type_id) ?? "—"}
+                      </td>
+                      <td>{modelM.get(step.llm_model_id) ?? "—"}</td>
+                      <td className="whitespace-nowrap text-xs text-zinc-600 dark:text-zinc-400">
+                        {inM.get(step.llm_input_type_id) ?? step.llm_input_type_id}
+                        <span className="mx-1 text-zinc-400">→</span>
+                        {outM.get(step.llm_output_type_id) ??
+                          step.llm_output_type_id}
+                      </td>
+                      <td className="max-w-xs text-zinc-600 dark:text-zinc-400">
+                        <span className="line-clamp-2" title={summary}>
+                          {summary}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="flex flex-col gap-1">
+                          <form action={reorderHumorFlavorStep} className="inline">
+                            <input
+                              type="hidden"
+                              name="humor_flavor_id"
+                              value={humorFlavorId}
+                            />
+                            <input type="hidden" name="step_id" value={idStr} />
+                            <input type="hidden" name="direction" value="up" />
+                            <button
+                              type="submit"
+                              disabled={isFirst}
+                              className="app-btn-secondary w-full px-2 py-1 text-xs disabled:pointer-events-none disabled:opacity-35"
+                            >
+                              Up
+                            </button>
+                          </form>
+                          <form action={reorderHumorFlavorStep} className="inline">
+                            <input
+                              type="hidden"
+                              name="humor_flavor_id"
+                              value={humorFlavorId}
+                            />
+                            <input type="hidden" name="step_id" value={idStr} />
+                            <input
+                              type="hidden"
+                              name="direction"
+                              value="down"
+                            />
+                            <button
+                              type="submit"
+                              disabled={isLast}
+                              className="app-btn-secondary w-full px-2 py-1 text-xs disabled:pointer-events-none disabled:opacity-35"
+                            >
+                              Down
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                      <td className="text-right">
                         <DeleteHumorFlavorStepForm
                           humorFlavorId={humorFlavorId}
                           stepId={idStr}
                         />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {steps.map((step) => (
         <details
           key={`edit-${step.id}`}
-          className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
+          className="group app-card overflow-hidden open:ring-1 open:ring-red-500/20"
         >
-          <summary className="cursor-pointer select-none px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-            Edit step {step.order_by}{" "}
-            <span className="font-normal text-zinc-500">
-              (id {step.id})
+          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-white/[0.03] [&::-webkit-details-marker]:hidden">
+            <span className="inline-flex w-full items-center justify-between gap-3">
+              <span>
+                Edit step {step.order_by}{" "}
+                <span className="font-normal text-zinc-500">
+                  (id {step.id})
+                </span>
+              </span>
+              <span className="text-zinc-400 transition group-open:rotate-180">
+                ▼
+              </span>
             </span>
           </summary>
-          <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
+          <div className="border-t border-zinc-200/80 bg-zinc-50/50 px-5 py-5 dark:border-white/[0.06] dark:bg-black/20">
             <EditHumorFlavorStepForm
               humorFlavorId={humorFlavorId}
               step={step}
@@ -254,15 +257,16 @@ export async function HumorFlavorStepsPanel({
         </details>
       ))}
 
-      <div className="rounded-lg border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-900/30">
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+      <div className="app-card p-5 sm:p-6">
+        <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
           Add step
         </h3>
-        <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-          New steps are appended with the next <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">order_by</code> value.
+        <p className="app-lead mt-1">
+          New steps append with the next{" "}
+          <span className="app-kbd">order_by</span> value.
         </p>
         {canAdd ? (
-          <div className="mt-4">
+          <div className="mt-6">
             <AddHumorFlavorStepForm
               humorFlavorId={humorFlavorId}
               inputTypes={inputTypes}
@@ -272,25 +276,14 @@ export async function HumorFlavorStepsPanel({
             />
           </div>
         ) : (
-          <p className="mt-3 text-sm text-amber-800 dark:text-amber-200">
+          <p className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
             Lookup tables are empty or not visible under RLS. You need at least
             one row each in{" "}
-            <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">
-              llm_input_types
-            </code>
-            ,{" "}
-            <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">
-              llm_output_types
-            </code>
-            ,{" "}
-            <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">
-              llm_models
-            </code>
-            , and{" "}
-            <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">
-              humor_flavor_step_types
-            </code>{" "}
-            to add steps.
+            <span className="app-kbd">llm_input_types</span>,{" "}
+            <span className="app-kbd">llm_output_types</span>,{" "}
+            <span className="app-kbd">llm_models</span>, and{" "}
+            <span className="app-kbd">humor_flavor_step_types</span> to add
+            steps.
           </p>
         )}
       </div>

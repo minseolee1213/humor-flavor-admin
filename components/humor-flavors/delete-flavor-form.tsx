@@ -22,11 +22,8 @@ export function DeleteFlavorForm({ flavorId }: Props) {
       }}
     >
       <input type="hidden" name="id" value={flavorId} />
-      <button
-        type="submit"
-        className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/50 dark:text-red-200 dark:hover:bg-red-950"
-      >
-        Delete
+      <button type="submit" className="app-btn-danger">
+        Delete flavor
       </button>
     </form>
   );

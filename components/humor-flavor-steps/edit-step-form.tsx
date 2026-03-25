@@ -23,16 +23,12 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="block text-sm font-medium text-zinc-800 dark:text-zinc-200"
+      className="mb-1.5 block text-sm font-medium text-zinc-800 dark:text-zinc-200"
     >
       {children}
-      {req ? <span className="text-red-600"> *</span> : null}
+      {req ? <span className="text-red-600 dark:text-red-400"> *</span> : null}
     </label>
   );
-}
-
-function inputClass(extra = ""): string {
-  return `w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 ${extra}`;
 }
 
 type Props = {
@@ -63,10 +59,7 @@ export function EditHumorFlavorStepForm({
       <input type="hidden" name="humor_flavor_id" value={humorFlavorId} />
       <input type="hidden" name="step_id" value={String(step.id)} />
       {state?.error ? (
-        <div
-          className="sm:col-span-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
-          role="alert"
-        >
+        <div className="app-alert-error sm:col-span-2 text-xs" role="alert">
           {state.error}
         </div>
       ) : null}
@@ -80,7 +73,7 @@ export function EditHumorFlavorStepForm({
           name="humor_flavor_step_type_id"
           required
           defaultValue={step.humor_flavor_step_type_id}
-          className={inputClass()}
+          className="app-select"
         >
           {stepTypes.map((o) => (
             <option key={o.id} value={o.id}>
@@ -99,7 +92,7 @@ export function EditHumorFlavorStepForm({
           name="llm_model_id"
           required
           defaultValue={step.llm_model_id}
-          className={inputClass()}
+          className="app-select"
         >
           {models.map((o) => (
             <option key={o.id} value={o.id}>
@@ -117,7 +110,7 @@ export function EditHumorFlavorStepForm({
           type="number"
           step="any"
           defaultValue={step.llm_temperature ?? ""}
-          className={inputClass()}
+          className="app-input"
         />
       </div>
 
@@ -130,7 +123,7 @@ export function EditHumorFlavorStepForm({
           name="llm_input_type_id"
           required
           defaultValue={step.llm_input_type_id}
-          className={inputClass()}
+          className="app-select"
         >
           {inputTypes.map((o) => (
             <option key={o.id} value={o.id}>
@@ -149,7 +142,7 @@ export function EditHumorFlavorStepForm({
           name="llm_output_type_id"
           required
           defaultValue={step.llm_output_type_id}
-          className={inputClass()}
+          className="app-select"
         >
           {outputTypes.map((o) => (
             <option key={o.id} value={o.id}>
@@ -166,7 +159,7 @@ export function EditHumorFlavorStepForm({
           name="description"
           type="text"
           defaultValue={step.description ?? ""}
-          className={inputClass()}
+          className="app-input"
         />
       </div>
 
@@ -177,7 +170,7 @@ export function EditHumorFlavorStepForm({
           name="llm_system_prompt"
           rows={2}
           defaultValue={step.llm_system_prompt ?? ""}
-          className={inputClass()}
+          className="app-input min-h-[4rem]"
         />
       </div>
 
@@ -188,16 +181,12 @@ export function EditHumorFlavorStepForm({
           name="llm_user_prompt"
           rows={2}
           defaultValue={step.llm_user_prompt ?? ""}
-          className={inputClass()}
+          className="app-input min-h-[4rem]"
         />
       </div>
 
-      <div className="sm:col-span-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg border border-zinc-800 bg-zinc-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60 dark:border-zinc-200 dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
+      <div className="sm:col-span-2 pt-1">
+        <button type="submit" disabled={pending} className="app-btn-primary">
           {pending ? "Saving…" : "Save step"}
         </button>
       </div>

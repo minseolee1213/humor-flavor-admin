@@ -4,22 +4,22 @@ import { CreateFlavorForm } from "@/components/humor-flavors/create-flavor-form"
 
 export default function NewHumorFlavorPage() {
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <Link
-          href="/admin/humor-flavors"
-          className="text-sm font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
-        >
-          ← Back to list
+    <div className="app-page">
+      <div className="max-w-lg">
+        <Link href="/admin/humor-flavors" className="app-link-back">
+          ← Humor flavors
         </Link>
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-          New humor flavor
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-red-600/90 dark:text-red-500/90">
+          Create
+        </p>
+        <h1 className="app-h1 mt-2">New humor flavor</h1>
+        <p className="app-lead mt-3">
           Required field: slug. Description is optional.
         </p>
       </div>
-      <CreateFlavorForm />
+      <div className="mt-10">
+        <CreateFlavorForm />
+      </div>
     </div>
   );
 }

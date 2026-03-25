@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -10,13 +11,24 @@ type Props = {
 
 export function SignOutButton({
   label = "Sign out",
-  className = "rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800",
+  className = "app-btn-secondary px-3 py-2 text-xs sm:text-sm",
 }: Props) {
   const router = useRouter();
+  const [routerReady, setRouterReady] = useState(false);
+
+  useEffect(() => {
+    setRouterReady(true);
+  }, []);
 
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    if (!routerReady) {
+      // Fallback to a hard navigation if router isn't initialized yet.
+      // This avoids "router action dispatched before initialization".
+      window.location.assign("/login");
+      return;
+    }
     router.push("/login");
     router.refresh();
   }

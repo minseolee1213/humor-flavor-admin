@@ -21,10 +21,23 @@ export default async function AdminLayout({
   if (!result.ok && result.reason === "unauthenticated") {
     const headerList = await headers();
     const pathname = headerList.get("x-pathname") ?? "/admin";
-    const safeNext =
-      pathname.startsWith("/admin") && !pathname.startsWith("//")
-        ? pathname
-        : "/admin";
+    const safeNext = (() => {
+      const candidate = pathname.trim();
+      if (!candidate) return "/admin";
+      if (!candidate.startsWith("/")) return "/admin";
+      if (candidate.startsWith("//")) return "/admin";
+      if (candidate.includes("://")) return "/admin";
+      if (!/^\/admin(?:\/|$)/.test(candidate)) return "/admin";
+      if (/%2f/i.test(candidate)) return "/admin";
+      if (/[\\\s]/.test(candidate)) return "/admin";
+      if (candidate.includes("?") || candidate.includes("#")) return "/admin";
+      return candidate;
+    })();
+
+    console.log("[auth/admin-layout] unauthenticated; redirecting to login", {
+      incomingPathname: pathname,
+      sanitizedNext: safeNext,
+    });
     redirect(`/login?next=${encodeURIComponent(safeNext)}`);
   }
 
@@ -33,23 +46,28 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <div className="flex items-center gap-6">
-          <Link
-            href="/admin"
-            className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100"
-          >
-            Admin
-          </Link>
-          <AdminNav />
-        </div>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <SignOutButton />
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl dark:border-white/[0.06] dark:bg-zinc-950/85">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 flex-1 items-center gap-6 lg:gap-10">
+            <Link
+              href="/admin"
+              className="shrink-0 text-lg font-bold tracking-tight text-zinc-900 dark:text-white"
+            >
+              <span className="text-red-600 dark:text-[var(--accent)]">
+                Humor
+              </span>
+              <span className="text-zinc-800 dark:text-zinc-100">Flavor</span>
+            </Link>
+            <AdminNav />
+          </div>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <ThemeToggle />
+            <SignOutButton />
+          </div>
         </div>
       </header>
-      <main className="p-6">{children}</main>
+      <main>{children}</main>
     </div>
   );
 }

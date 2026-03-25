@@ -47,18 +47,12 @@ export default async function HumorFlavorDetailPage({
 
   if (error) {
     return (
-      <div className="mx-auto max-w-3xl space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Humor flavor</h1>
-        <p
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
-          role="alert"
-        >
+      <div className="app-page">
+        <h1 className="app-h1">Humor flavor</h1>
+        <p className="app-alert-error mt-6" role="alert">
           Could not load this flavor. {error.message}
         </p>
-        <Link
-          href="/admin/humor-flavors"
-          className="text-sm font-medium text-zinc-900 underline dark:text-zinc-100"
-        >
+        <Link href="/admin/humor-flavors" className="app-link-back mt-6 inline-block">
           ← Back to list
         </Link>
       </div>
@@ -137,69 +131,83 @@ export default async function HumorFlavorDetailPage({
   }));
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <Link
-            href="/admin/humor-flavors"
-            className="text-sm font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
-          >
-            ← Back to list
-          </Link>
-          <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-            {flavor.slug}
-          </h1>
-          <p className="mt-1 font-mono text-xs text-zinc-500 dark:text-zinc-500">
-            id: {idStr}
+    <div className="app-page space-y-12">
+      {/* Hero strip */}
+      <section className="relative overflow-hidden rounded-2xl border border-zinc-200/80 bg-gradient-to-br from-zinc-100 via-white to-zinc-100 p-6 shadow-xl shadow-black/5 dark:border-white/[0.07] dark:from-zinc-900 dark:via-[#121214] dark:to-black dark:shadow-black/50 sm:p-8">
+        <div
+          className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-red-600/10 blur-3xl dark:bg-red-500/15"
+          aria-hidden
+        />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <Link
+              href="/admin/humor-flavors"
+              className="app-link-back inline-flex items-center gap-1"
+            >
+              <span aria-hidden>←</span> Humor flavors
+            </Link>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
+              {flavor.slug}
+            </h1>
+            <p className="mt-2 font-mono text-xs text-zinc-500 dark:text-zinc-500">
+              id {idStr}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/admin/humor-flavors/${idStr}/edit`}
+              className="app-btn-secondary"
+            >
+              Edit flavor
+            </Link>
+            <DeleteFlavorForm flavorId={idStr} />
+          </div>
+        </div>
+      </section>
+
+      {/* Metadata */}
+      <section className="app-card">
+        <div className="app-card-inner">
+          <h2 className="app-h2">Flavor details</h2>
+          <p className="app-lead mt-1">
+            Core record for this humor flavor. Prompt chain and tests reference
+            this id.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/admin/humor-flavors/${idStr}/edit`}
-            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
-          >
-            Edit
-          </Link>
-          <DeleteFlavorForm flavorId={idStr} />
-        </div>
-      </div>
-
-      <dl className="grid gap-4 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950 sm:grid-cols-2">
-        <div>
-          <dt className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Description
-          </dt>
-          <dd className="mt-1 text-zinc-800 dark:text-zinc-200">
-            {flavor.description ?? (
-              <span className="text-zinc-400 italic dark:text-zinc-500">
-                None
-              </span>
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Created (UTC)
-          </dt>
-          <dd className="mt-1 text-zinc-800 dark:text-zinc-200">
-            {formatWhen(flavor.created_datetime_utc)}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Last modified (UTC)
-          </dt>
-          <dd className="mt-1 text-zinc-800 dark:text-zinc-200">
-            {formatWhen(flavor.modified_datetime_utc)}
-          </dd>
-        </div>
-      </dl>
+        <dl className="grid gap-6 px-5 py-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              Description
+            </dt>
+            <dd className="mt-2 text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+              {flavor.description ?? (
+                <span className="text-zinc-400 italic dark:text-zinc-500">
+                  None
+                </span>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              Created (UTC)
+            </dt>
+            <dd className="mt-2 text-sm text-zinc-800 dark:text-zinc-200">
+              {formatWhen(flavor.created_datetime_utc)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              Last modified (UTC)
+            </dt>
+            <dd className="mt-2 text-sm text-zinc-800 dark:text-zinc-200">
+              {formatWhen(flavor.modified_datetime_utc)}
+            </dd>
+          </div>
+        </dl>
+      </section>
 
       {stepError ? (
-        <p
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
-          role="alert"
-        >
+        <p className="app-alert-error" role="alert">
           Step action failed:{" "}
           {stepError === "invalid" ? "Invalid request." : stepError}
         </p>

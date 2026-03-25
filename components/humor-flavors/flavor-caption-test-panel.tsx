@@ -40,8 +40,8 @@ function SelectedImagePreview({
   humorFlavorId: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-emerald-900/20 bg-white/80 p-3 sm:flex-row sm:items-stretch dark:border-emerald-800/40 dark:bg-emerald-950/40">
-      <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100 sm:h-auto sm:w-36 sm:min-h-[7rem] dark:border-zinc-700 dark:bg-zinc-800">
+    <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/80 to-zinc-950/90 p-4 shadow-lg shadow-black/30 sm:flex-row sm:items-stretch">
+      <div className="relative h-32 w-full shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/40 sm:h-auto sm:w-40 sm:min-h-[8rem]">
         {url ? (
           // eslint-disable-next-line @next/next/no-img-element -- remote storage URLs; avoid next/image domain config
           <img
@@ -51,22 +51,23 @@ function SelectedImagePreview({
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center px-1 text-center text-[10px] text-zinc-500 dark:text-zinc-400">
+          <div className="flex h-full items-center justify-center px-1 text-center text-[10px] text-zinc-500">
             No preview URL
           </div>
         )}
       </div>
       <div className="min-w-0 flex-1 text-sm">
-        <p className="font-medium leading-snug text-zinc-900 dark:text-zinc-100">
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-red-500/90">
+          Preview
+        </p>
+        <p className="mt-1 font-semibold leading-snug text-white">
           {flavorSlug}
         </p>
-        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-xs text-zinc-400">
           Flavor id{" "}
-          <span className="font-mono text-zinc-600 dark:text-zinc-300">
-            {humorFlavorId}
-          </span>
+          <span className="font-mono text-zinc-300">{humorFlavorId}</span>
         </p>
-        <p className="mt-2 break-all font-mono text-[11px] text-zinc-600 dark:text-zinc-300">
+        <p className="mt-3 break-all font-mono text-[11px] leading-snug text-zinc-400">
           {imageId}
         </p>
       </div>
@@ -95,6 +96,11 @@ export function FlavorCaptionTestPanel({
     runHumorFlavorCaptionTest,
     initial,
   );
+
+  const [routerReady, setRouterReady] = useState(false);
+  useEffect(() => {
+    setRouterReady(true);
+  }, []);
 
   const [source, setSource] = useState<"study" | "recent">(
     studySets.some((s) => s.images.length > 0) ? "study" : "recent",
@@ -130,68 +136,60 @@ export function FlavorCaptionTestPanel({
   }, [source, studyImages, recentImages, selectedImageId]);
 
   useEffect(() => {
-    if (state.status === "success") {
+    if (routerReady && state.status === "success") {
       router.refresh();
     }
-  }, [state.status, router]);
+  }, [state.status, router, routerReady]);
 
   return (
-    <section className="rounded-lg border border-emerald-900/20 bg-emerald-50/40 dark:border-emerald-800/40 dark:bg-emerald-950/25">
-      <div className="border-b border-emerald-900/15 px-4 py-3 dark:border-emerald-800/30">
-        <h2 className="text-base font-semibold text-emerald-950 dark:text-emerald-100">
+    <section className="app-card overflow-hidden">
+      <div className="border-b border-zinc-200/80 bg-gradient-to-r from-red-950/40 via-zinc-900/50 to-transparent px-5 py-4 dark:border-white/[0.06]">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/90">
+          Caption pipeline
+        </p>
+        <h2 className="mt-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
           Test this humor flavor
         </h2>
-        <p className="mt-1 text-sm text-emerald-900/85 dark:text-emerald-200/85">
-          Sends{" "}
-          <code className="rounded bg-emerald-100/80 px-1 dark:bg-emerald-900/60">
-            POST …/pipeline/generate-captions
-          </code>{" "}
-          with{" "}
-          <code className="rounded bg-emerald-100/80 px-1 dark:bg-emerald-900/60">
-            imageId
-          </code>{" "}
-          +{" "}
-          <code className="rounded bg-emerald-100/80 px-1 dark:bg-emerald-900/60">
-            humorFlavorId
-          </code>{" "}
-          (server-side only). Uses your Supabase session JWT as{" "}
-          <code className="rounded bg-emerald-100/80 px-1 dark:bg-emerald-900/60">
-            Authorization: Bearer …
-          </code>
-          . Results below include the raw API response and rows read back from{" "}
-          <code className="rounded bg-emerald-100/80 px-1 dark:bg-emerald-900/60">
-            captions
-          </code>{" "}
-          (RLS applies).
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          Sends <span className="app-kbd">POST …/generate-captions</span> with{" "}
+          <span className="app-kbd">imageId</span> +{" "}
+          <span className="app-kbd">humorFlavorId</span> (server-side only). Auth
+          via your Supabase session{" "}
+          <span className="app-kbd">Authorization: Bearer …</span>. Response
+          and DB rows from <span className="app-kbd">captions</span> (RLS).
         </p>
       </div>
 
-      <div className="p-4">
-        <form action={formAction} className="mt-4 space-y-4">
+      <div className="p-5 sm:p-6">
+        <form action={formAction} className="space-y-5">
           <input type="hidden" name="humor_flavor_id" value={humorFlavorId} />
 
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-semibold text-zinc-900 dark:text-white">
               Image source
             </legend>
-            <label className="mr-4 flex cursor-pointer items-center gap-2 text-sm">
-              <input
-                type="radio"
-                name="source_dummy"
-                checked={source === "study"}
-                onChange={() => setSource("study")}
-              />
-              Study image set
-            </label>
-            <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <input
-                type="radio"
-                name="source_dummy"
-                checked={source === "recent"}
-                onChange={() => setSource("recent")}
-              />
-              Recent images
-            </label>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm text-zinc-700 dark:text-zinc-300">
+                <input
+                  type="radio"
+                  name="source_dummy"
+                  className="h-4 w-4 accent-red-600"
+                  checked={source === "study"}
+                  onChange={() => setSource("study")}
+                />
+                Study image set
+              </label>
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm text-zinc-700 dark:text-zinc-300">
+                <input
+                  type="radio"
+                  name="source_dummy"
+                  className="h-4 w-4 accent-red-600"
+                  checked={source === "recent"}
+                  onChange={() => setSource("recent")}
+                />
+                Recent images
+              </label>
+            </div>
           </fieldset>
 
           {source === "study" ? (
@@ -205,7 +203,7 @@ export function FlavorCaptionTestPanel({
                 </label>
                 <select
                   id="study-set"
-                  className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-900"
+                  className="app-select mt-1"
                   value={selectedSetId === "" ? "" : String(selectedSetId)}
                   onChange={(e) =>
                     setSelectedSetId(
@@ -237,7 +235,7 @@ export function FlavorCaptionTestPanel({
                   required
                   value={selectedImageId}
                   onChange={(e) => setSelectedImageId(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-900"
+                  className="app-select mt-1"
                 >
                   <option value="">
                     {studyImages.length === 0
@@ -266,7 +264,7 @@ export function FlavorCaptionTestPanel({
                 required
                 value={selectedImageId}
                 onChange={(e) => setSelectedImageId(e.target.value)}
-                className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-900"
+                className="app-select mt-1"
               >
                 <option value="">
                   {recentImages.length === 0
@@ -290,7 +288,7 @@ export function FlavorCaptionTestPanel({
                 ? "Select an image from the list first."
                 : undefined
             }
-            className="rounded-lg border border-emerald-800 bg-emerald-800 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-600 dark:bg-emerald-700 dark:hover:bg-emerald-600"
+            className="app-btn-primary disabled:pointer-events-none disabled:opacity-45"
           >
             {pending ? "Calling API…" : "Generate captions"}
           </button>
@@ -298,7 +296,7 @@ export function FlavorCaptionTestPanel({
 
         {selectedImageMeta ? (
           <div className="mt-4 space-y-1.5">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-900/80 dark:text-emerald-200/80">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-red-500/90">
               {state.status === "success"
                 ? "Image tested"
                 : pending
@@ -315,10 +313,7 @@ export function FlavorCaptionTestPanel({
         ) : null}
 
         {state.status === "error" ? (
-          <div
-            className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100"
-            role="alert"
-          >
+          <div className="app-alert-error mt-6" role="alert">
             <p className="font-medium">{state.message}</p>
             {state.detail ? (
               <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-all text-xs opacity-90">
@@ -329,34 +324,38 @@ export function FlavorCaptionTestPanel({
         ) : null}
 
         {state.status === "success" ? (
-          <div className="mt-4 space-y-4">
-            <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-              API succeeded (HTTP {state.httpStatus}). Captions below may take a
-              moment to appear in the database after the request completes.
+          <div className="mt-8 space-y-6 border-t border-zinc-200/80 pt-8 dark:border-white/[0.06]">
+            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              API succeeded{" "}
+              <span className="app-kbd">HTTP {state.httpStatus}</span>. Captions
+              may appear in the database shortly after the request completes.
             </p>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                API response body
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                API response
               </h3>
-              <pre className="mt-1 max-h-64 overflow-auto rounded-md border border-zinc-200 bg-zinc-950/90 p-3 text-xs text-zinc-100 dark:border-zinc-700">
+              <pre className="mt-2 max-h-64 overflow-auto rounded-xl border border-white/10 bg-black/50 p-4 text-xs leading-relaxed text-zinc-300">
                 {stringifyApi(state.apiResponse)}
               </pre>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                Captions for this flavor + selected image (DB)
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                Captions — selected image (DB)
               </h3>
               {state.captionsForImageAndFlavor.length === 0 ? (
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   No matching rows yet. If the API writes asynchronously,
                   refresh the page.
                 </p>
               ) : (
-                <ul className="mt-1 space-y-2 border border-zinc-200 rounded-md p-2 dark:border-zinc-800">
+                <ul className="mt-3 space-y-2">
                   {state.captionsForImageAndFlavor.map((c) => (
-                    <li key={c.id} className="text-sm text-zinc-800 dark:text-zinc-200">
+                    <li
+                      key={c.id}
+                      className="rounded-xl border border-white/10 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-200"
+                    >
                       {c.content ?? (
-                        <span className="italic text-zinc-400">(empty)</span>
+                        <span className="italic text-zinc-500">(empty)</span>
                       )}
                     </li>
                   ))}
@@ -364,24 +363,24 @@ export function FlavorCaptionTestPanel({
               )}
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                Latest captions for this flavor after request (DB)
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                Latest captions — flavor (DB)
               </h3>
               {state.recentCaptionsForFlavor.length === 0 ? (
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   None returned from query.
                 </p>
               ) : (
-                <ul className="mt-1 space-y-2">
+                <ul className="mt-3 space-y-2">
                   {state.recentCaptionsForFlavor.map((c) => (
                     <li
                       key={c.id}
-                      className="rounded border border-zinc-100 bg-zinc-50/80 px-2 py-1 text-sm dark:border-zinc-800 dark:bg-zinc-900/50"
+                      className="rounded-xl border border-white/10 bg-gradient-to-br from-zinc-900/60 to-zinc-950/80 px-4 py-3 text-sm"
                     >
-                      <span className="text-zinc-900 dark:text-zinc-100">
+                      <span className="text-zinc-100">
                         {c.content ?? "—"}
                       </span>
-                      <span className="mt-0.5 block font-mono text-xs text-zinc-500">
+                      <span className="mt-1 block font-mono text-xs text-zinc-500">
                         {c.image_id}
                       </span>
                     </li>

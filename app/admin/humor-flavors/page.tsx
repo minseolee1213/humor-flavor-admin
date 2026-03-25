@@ -36,12 +36,9 @@ export default async function HumorFlavorsListPage({
 
   if (error) {
     return (
-      <div className="mx-auto max-w-3xl space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Humor flavors</h1>
-        <p
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
-          role="alert"
-        >
+      <div className="app-page">
+        <h1 className="app-h1">Humor flavors</h1>
+        <p className="app-alert-error mt-6" role="alert">
           Could not load humor flavors. {error.message}
         </p>
       </div>
@@ -58,29 +55,25 @@ export default async function HumorFlavorsListPage({
   >[];
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="app-page">
+      <div className="flex flex-col gap-6 border-b border-zinc-200 pb-10 dark:border-white/[0.06] sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Humor flavors
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Manage flavors, steps, caption testing, and related configuration.
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-600/90 dark:text-red-500/90">
+            Configuration
+          </p>
+          <h1 className="app-h1 mt-2">Humor flavors</h1>
+          <p className="app-lead mt-3 max-w-xl">
+            Manage flavors, prompt chains, caption testing, and related
+            configuration. Select a row to open the detail workspace.
           </p>
         </div>
-        <Link
-          href="/admin/humor-flavors/new"
-          className="inline-flex items-center justify-center rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Link href="/admin/humor-flavors/new" className="app-btn-primary shrink-0">
           New flavor
         </Link>
       </div>
 
       {listError ? (
-        <p
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
-          role="alert"
-        >
+        <p className="app-alert-error mt-8" role="alert">
           {listError === "invalid_id"
             ? "Delete failed: invalid id."
             : listError}
@@ -88,69 +81,62 @@ export default async function HumorFlavorsListPage({
       ) : null}
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/80 px-6 py-12 text-center dark:border-zinc-700 dark:bg-zinc-900/40">
-          <p className="font-medium text-zinc-800 dark:text-zinc-200">
-            No humor flavors yet
-          </p>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Create one to get started.
-          </p>
-          <Link
-            href="/admin/humor-flavors/new"
-            className="mt-4 inline-block text-sm font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
-          >
-            New flavor
-          </Link>
+        <div className="app-card mt-10">
+          <div className="px-8 py-16 text-center">
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">
+              No humor flavors yet
+            </p>
+            <p className="app-lead mt-2">
+              Create your first flavor to start configuring prompt chains.
+            </p>
+            <Link
+              href="/admin/humor-flavors/new"
+              className="app-btn-primary mt-8 inline-flex"
+            >
+              Create flavor
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <div className="app-table-wrap mt-10 shadow-xl shadow-black/5 dark:shadow-black/40">
+          <table className="app-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                  Slug
-                </th>
-                <th className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                  Description
-                </th>
-                <th className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                  Updated (UTC)
-                </th>
-                <th className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                  {" "}
-                </th>
+                <th>Slug</th>
+                <th className="hidden md:table-cell">Description</th>
+                <th>Updated (UTC)</th>
+                <th className="text-right"> </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <tbody>
               {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="bg-white hover:bg-zinc-50/80 dark:bg-zinc-950 dark:hover:bg-zinc-900/60"
-                >
-                  <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                <tr key={row.id}>
+                  <td className="font-medium text-zinc-900 dark:text-white">
                     <Link
                       href={`/admin/humor-flavors/${row.id}`}
-                      className="text-zinc-900 underline-offset-2 hover:underline dark:text-zinc-100"
+                      className="hover:text-red-600 dark:hover:text-[var(--accent)]"
                     >
                       {row.slug}
                     </Link>
                   </td>
-                  <td className="max-w-md px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                  <td className="hidden max-w-md md:table-cell">
                     {row.description ? (
-                      <span className="line-clamp-2">{row.description}</span>
+                      <span className="line-clamp-2 text-zinc-600 dark:text-zinc-400">
+                        {row.description}
+                      </span>
                     ) : (
                       <span className="text-zinc-400 italic dark:text-zinc-500">
                         —
                       </span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                  <td className="whitespace-nowrap text-zinc-600 dark:text-zinc-400">
                     {formatWhen(row.modified_datetime_utc)}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="text-right">
                     <Link
                       href={`/admin/humor-flavors/${row.id}/edit`}
-                      className="text-sm font-medium text-zinc-900 underline-offset-2 hover:underline dark:text-zinc-100"
+                      className="app-btn-ghost text-xs"
                     >
                       Edit
                     </Link>

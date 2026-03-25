@@ -27,13 +27,15 @@ export async function RecentCaptionsForFlavor({
 
   if (error) {
     return (
-      <section className="rounded-lg border border-red-200 bg-red-50/80 p-4 dark:border-red-900 dark:bg-red-950/30">
-        <h2 className="font-semibold text-red-900 dark:text-red-100">
-          Recent captions (this flavor)
-        </h2>
-        <p className="mt-2 text-sm text-red-800 dark:text-red-200">
-          Could not load captions: {error.message}
-        </p>
+      <section className="app-card overflow-hidden border-red-500/20">
+        <div className="app-card-inner border-red-500/10 bg-red-500/5">
+          <h2 className="app-h2 text-red-800 dark:text-red-200">
+            Recent captions (this flavor)
+          </h2>
+          <p className="app-lead mt-2 text-red-700 dark:text-red-300">
+            Could not load captions: {error.message}
+          </p>
+        </div>
       </section>
     );
   }
@@ -41,31 +43,31 @@ export async function RecentCaptionsForFlavor({
   const rows = data ?? [];
 
   return (
-    <section className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-          Recent captions (this flavor)
+    <section className="app-card overflow-hidden">
+      <div className="app-card-inner">
+        <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
+          Recent captions
         </h2>
-        <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
-          Rows from <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">captions</code> where{" "}
-          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">humor_flavor_id</code> matches.
+        <p className="app-lead mt-1">
+          From <span className="app-kbd">captions</span> where{" "}
+          <span className="app-kbd">humor_flavor_id</span> matches this flavor.
         </p>
       </div>
       {rows.length === 0 ? (
-        <p className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="px-5 py-12 text-center text-sm text-zinc-500 dark:text-zinc-400">
           No captions stored for this flavor yet. Run a test above if your API
           writes to this table.
         </p>
       ) : (
-        <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+        <ul className="divide-y divide-zinc-200/80 dark:divide-white/[0.06]">
           {rows.map((row) => (
-            <li key={row.id} className="px-4 py-3">
-              <p className="text-sm text-zinc-900 dark:text-zinc-100">
+            <li key={row.id} className="px-5 py-4 transition hover:bg-zinc-50/80 dark:hover:bg-white/[0.02]">
+              <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
                 {row.content ?? (
                   <span className="italic text-zinc-400">(empty content)</span>
                 )}
               </p>
-              <p className="mt-1 font-mono text-xs text-zinc-500">
+              <p className="mt-2 font-mono text-xs text-zinc-500">
                 image_id {row.image_id} · {formatWhen(row.created_datetime_utc)}{" "}
                 UTC
               </p>

@@ -20,18 +20,12 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="block text-sm font-medium text-zinc-800 dark:text-zinc-200"
+      className="mb-1.5 block text-sm font-medium text-zinc-800 dark:text-zinc-200"
     >
       {children}
-      {req ? <span className="text-red-600"> *</span> : null}
+      {req ? <span className="text-red-600 dark:text-red-400"> *</span> : null}
     </label>
   );
-}
-
-function inputClass(
-  extra = "",
-): string {
-  return `w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 ${extra}`;
 }
 
 type Props = {
@@ -58,10 +52,7 @@ export function AddHumorFlavorStepForm({
     <form action={formAction} className="grid gap-4 sm:grid-cols-2">
       <input type="hidden" name="humor_flavor_id" value={humorFlavorId} />
       {state?.error ? (
-        <div
-          className="sm:col-span-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
-          role="alert"
-        >
+        <div className="app-alert-error sm:col-span-2" role="alert">
           {state.error}
         </div>
       ) : null}
@@ -74,7 +65,7 @@ export function AddHumorFlavorStepForm({
           id="add-step_type"
           name="humor_flavor_step_type_id"
           required
-          className={inputClass()}
+          className="app-select"
           defaultValue=""
         >
           <option value="" disabled>
@@ -96,7 +87,7 @@ export function AddHumorFlavorStepForm({
           id="add-llm_model"
           name="llm_model_id"
           required
-          className={inputClass()}
+          className="app-select"
           defaultValue=""
         >
           <option value="" disabled>
@@ -117,7 +108,7 @@ export function AddHumorFlavorStepForm({
           name="llm_temperature"
           type="number"
           step="any"
-          className={inputClass()}
+          className="app-input"
           placeholder="Optional"
         />
       </div>
@@ -130,7 +121,7 @@ export function AddHumorFlavorStepForm({
           id="add-in"
           name="llm_input_type_id"
           required
-          className={inputClass()}
+          className="app-select"
           defaultValue=""
         >
           <option value="" disabled>
@@ -152,7 +143,7 @@ export function AddHumorFlavorStepForm({
           id="add-out"
           name="llm_output_type_id"
           required
-          className={inputClass()}
+          className="app-select"
           defaultValue=""
         >
           <option value="" disabled>
@@ -172,7 +163,7 @@ export function AddHumorFlavorStepForm({
           id="add-desc"
           name="description"
           type="text"
-          className={inputClass()}
+          className="app-input"
           placeholder="Optional"
         />
       </div>
@@ -183,7 +174,7 @@ export function AddHumorFlavorStepForm({
           id="add-sys"
           name="llm_system_prompt"
           rows={3}
-          className={inputClass()}
+          className="app-input min-h-[5rem]"
           placeholder="Optional"
         />
       </div>
@@ -194,17 +185,13 @@ export function AddHumorFlavorStepForm({
           id="add-user"
           name="llm_user_prompt"
           rows={3}
-          className={inputClass()}
+          className="app-input min-h-[5rem]"
           placeholder="Optional"
         />
       </div>
 
-      <div className="sm:col-span-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60 dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+      <div className="sm:col-span-2 pt-1">
+        <button type="submit" disabled={pending} className="app-btn-primary">
           {pending ? "Adding…" : "Add step to chain"}
         </button>
       </div>

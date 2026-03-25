@@ -12,14 +12,17 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   if (!user) {
+    console.log("[auth/home] no user; redirect /login");
     redirect("/login");
   }
 
   const admin = await checkAdminAccess(supabase);
 
   if (admin.ok) {
+    console.log("[auth/home] user is admin; redirect /admin");
     redirect("/admin");
   }
 
+  console.log("[auth/home] user forbidden; redirect /unauthorized");
   redirect("/unauthorized");
 }

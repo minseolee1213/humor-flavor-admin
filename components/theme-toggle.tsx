@@ -14,22 +14,26 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <span className="inline-block h-9 w-[10rem] rounded-md border border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800" />
+      <span className="inline-flex h-9 w-[11rem] rounded-xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-white/5" />
     );
   }
 
-  const label =
-    theme === "system"
-      ? `System (${resolvedTheme ?? "…"})`
-      : theme === "dark"
-        ? "Dark"
-        : "Light";
+  const btn =
+    "rounded-lg px-2.5 py-1.5 text-xs font-medium transition sm:text-sm";
 
   return (
-    <div className="flex items-center gap-1">
+    <div
+      className="inline-flex items-center rounded-xl border border-zinc-200 bg-zinc-50/90 p-0.5 dark:border-white/10 dark:bg-white/[0.04]"
+      role="group"
+      aria-label="Theme"
+    >
       <button
         type="button"
-        className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+        className={`${btn} ${
+          theme === "light"
+            ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        }`}
         onClick={() => setTheme("light")}
         aria-pressed={theme === "light"}
       >
@@ -37,7 +41,11 @@ export function ThemeToggle() {
       </button>
       <button
         type="button"
-        className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+        className={`${btn} ${
+          theme === "dark"
+            ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        }`}
         onClick={() => setTheme("dark")}
         aria-pressed={theme === "dark"}
       >
@@ -45,12 +53,20 @@ export function ThemeToggle() {
       </button>
       <button
         type="button"
-        className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+        className={`${btn} ${
+          theme === "system"
+            ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        }`}
         onClick={() => setTheme("system")}
         aria-pressed={theme === "system"}
-        title={label}
+        title={
+          theme === "system"
+            ? `System (${resolvedTheme ?? "…"})`
+            : "System theme"
+        }
       >
-        System
+        Auto
       </button>
     </div>
   );

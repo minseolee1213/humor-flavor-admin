@@ -27,10 +27,7 @@ export function DeleteHumorFlavorStepForm({
     >
       <input type="hidden" name="humor_flavor_id" value={humorFlavorId} />
       <input type="hidden" name="step_id" value={stepId} />
-      <button
-        type="submit"
-        className="rounded border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-800 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/50 dark:text-red-200"
-      >
+      <button type="submit" className="app-btn-danger px-2 py-1 text-xs">
         Delete
       </button>
     </form>
