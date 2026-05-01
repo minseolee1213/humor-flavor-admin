@@ -253,25 +253,6 @@ export async function reorderHumorFlavorStep(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const allowedSignatures = await loadKnownWorkingStepSignatures(supabase);
-  if (allowedSignatures.size === 0) {
-    return {
-      error:
-        "No known-working step templates found yet. Create steps by copying from a flavor that already generates captions.",
-    };
-  }
-  const requestedSignature = buildStepSignature({
-    llmInputTypeId,
-    llmOutputTypeId,
-    humorFlavorStepTypeId,
-    llmModelId,
-  });
-  if (!allowedSignatures.has(requestedSignature)) {
-    return {
-      error:
-        "This type/model combination is not in known-working templates. Use 'Copy steps from known-working flavor' instead of manual custom combinations.",
-    };
-  }
   const flavorColumn = await detectStepFlavorColumn(supabase, humorFlavorId);
   const {
     data: { user },
@@ -532,6 +513,7 @@ export async function updateHumorFlavorStep(
   }
 
   const supabase = await createClient();
+  const allowedSignatures = await loadKnownWorkingStepSignatures(supabase);
   const flavorColumn = await detectStepFlavorColumn(supabase, humorFlavorId);
   const {
     data: { user },
