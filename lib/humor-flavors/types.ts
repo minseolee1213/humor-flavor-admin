@@ -1,4 +1,4 @@
-/** Matches PostgREST `humor_flavors` (from live OpenAPI); `id` may arrive as number or string from the client. */
+/** Matches PostgREST `humor_flavors` (connected schema). */
 export type HumorFlavorRow = {
   id: number;
   created_datetime_utc: string;
@@ -7,4 +7,5 @@ export type HumorFlavorRow = {
   created_by_user_id: string;
   modified_by_user_id: string;
   modified_datetime_utc: string;
+  is_pinned?: boolean;
 };

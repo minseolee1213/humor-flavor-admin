@@ -45,7 +45,7 @@ if (!a || !b || !Number.isInteger(a) || !Number.isInteger(b)) {
 async function flavorMeta(id) {
   const { data, error } = await sb
     .from("humor_flavors")
-    .select("id, slug, description")
+    .select("id, name, description")
     .eq("id", id)
     .maybeSingle();
   return { data, error };

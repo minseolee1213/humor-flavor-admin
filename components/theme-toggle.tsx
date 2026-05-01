@@ -14,16 +14,16 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <span className="inline-flex h-9 w-[11rem] rounded-xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-white/5" />
+      <span className="inline-flex h-9 w-[11rem] rounded-full border border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900/50" />
     );
   }
 
   const btn =
-    "rounded-lg px-2.5 py-1.5 text-xs font-medium transition sm:text-sm";
+    "rounded-full px-2.5 py-1.5 text-xs font-medium transition sm:text-sm";
 
   return (
     <div
-      className="inline-flex items-center rounded-xl border border-zinc-200 bg-zinc-50/90 p-0.5 dark:border-white/10 dark:bg-white/[0.04]"
+      className="inline-flex items-center rounded-full border border-zinc-200/90 bg-zinc-50/95 p-0.5 shadow-sm dark:border-zinc-700/80 dark:bg-zinc-900/60 dark:shadow-black/20 dark:backdrop-blur-sm"
       role="group"
       aria-label="Theme"
     >
@@ -32,7 +32,7 @@ export function ThemeToggle() {
         className={`${btn} ${
           theme === "light"
             ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
-            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
         }`}
         onClick={() => setTheme("light")}
         aria-pressed={theme === "light"}
@@ -43,8 +43,8 @@ export function ThemeToggle() {
         type="button"
         className={`${btn} ${
           theme === "dark"
-            ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
-            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            ? "bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-sm dark:from-red-600 dark:to-rose-500"
+            : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
         }`}
         onClick={() => setTheme("dark")}
         aria-pressed={theme === "dark"}
@@ -56,7 +56,7 @@ export function ThemeToggle() {
         className={`${btn} ${
           theme === "system"
             ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
-            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
         }`}
         onClick={() => setTheme("system")}
         aria-pressed={theme === "system"}

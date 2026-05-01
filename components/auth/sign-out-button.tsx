@@ -11,7 +11,7 @@ type Props = {
 
 export function SignOutButton({
   label = "Sign out",
-  className = "app-btn-secondary px-3 py-2 text-xs sm:text-sm",
+  className = "app-btn-header",
 }: Props) {
   const router = useRouter();
   const [routerReady, setRouterReady] = useState(false);

@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CopiedStepsDiff } from "@/components/humor-flavors/copied-steps-diff";
+import { CopyStepsFromFlavorForm } from "@/components/humor-flavors/copy-steps-from-flavor-form";
 import { DeleteFlavorForm } from "@/components/humor-flavors/delete-flavor-form";
+import { DuplicateFlavorForm } from "@/components/humor-flavors/duplicate-flavor-form";
 import { FlavorCaptionTestPanel } from "@/components/humor-flavors/flavor-caption-test-panel";
 import { RecentCaptionsForFlavor } from "@/components/humor-flavors/recent-captions-for-flavor";
 import { HumorFlavorStepsPanel } from "@/components/humor-flavor-steps/steps-panel";
+import { loadStepsForFlavor } from "@/lib/humor-flavor-steps/actions";
+import { isFlavorChainComplete } from "@/lib/humor-flavor-steps/step-complete";
+import type { HumorFlavorStepRow } from "@/lib/humor-flavor-steps/types";
 import { createClient } from "@/lib/supabase/server";
 import type { HumorFlavorRow } from "@/lib/humor-flavors/types";
 
@@ -33,6 +39,12 @@ export default async function HumorFlavorDetailPage({
   const sp = await searchParams;
   const stepError =
     typeof sp.step_error === "string" ? sp.step_error : undefined;
+  const duplicateState = typeof sp.dup === "string" ? sp.dup : undefined;
+  const copiedState = sp.copied === "1";
+  const copiedFromId =
+    typeof sp.copied_from === "string" && /^\d+$/.test(sp.copied_from)
+      ? sp.copied_from
+      : undefined;
 
   if (!/^\d+$/.test(flavorId)) {
     notFound();
@@ -130,26 +142,86 @@ export default async function HumorFlavorDetailPage({
     url: im.url ?? null,
   }));
 
+  const steps = await loadStepsForFlavor(supabase, idStr);
+  const captionPipelineReady = isFlavorChainComplete(steps);
+
+  const { data: allFlavors } = await supabase
+    .from("humor_flavors")
+    .select("id, slug")
+    .order("slug");
+  const flavorIdsForSteps = (allFlavors ?? []).map((f) => f.id);
+  const { data: allStepRows } =
+    flavorIdsForSteps.length > 0
+      ? await supabase
+          .from("humor_flavor_steps")
+          .select("*")
+          .in("humor_flavor_id", flavorIdsForSteps)
+      : { data: [] as HumorFlavorStepRow[] };
+
+  const stepsByFlavor = new Map<number, HumorFlavorStepRow[]>();
+  for (const row of (allStepRows ?? []) as HumorFlavorStepRow[]) {
+    const fid = row.humor_flavor_id;
+    const list = stepsByFlavor.get(fid) ?? [];
+    list.push(row);
+    stepsByFlavor.set(fid, list);
+  }
+
+  const copySources = (allFlavors ?? [])
+    .filter(
+      (f) =>
+        f.id !== flavor.id &&
+        isFlavorChainComplete(stepsByFlavor.get(f.id) ?? []),
+    )
+    .map((f) => ({ id: f.id, slug: f.slug }));
+
+  const successfulFlavorIds = new Set<number>();
+  const { data: recentCaptionFlavorRows } = await supabase
+    .from("captions")
+    .select("humor_flavor_id")
+    .not("humor_flavor_id", "is", null)
+    .order("created_datetime_utc", { ascending: false })
+    .limit(3000);
+  for (const row of recentCaptionFlavorRows ?? []) {
+    if (typeof row.humor_flavor_id === "number") {
+      successfulFlavorIds.add(row.humor_flavor_id);
+    }
+  }
+  const workingCopySources = copySources.filter((s) =>
+    successfulFlavorIds.has(s.id),
+  );
+
+  let copiedFromSlug: string | undefined;
+  let copiedFromSteps: HumorFlavorStepRow[] = [];
+  if (copiedState && copiedFromId) {
+    const src = (allFlavors ?? []).find((f) => String(f.id) === copiedFromId);
+    copiedFromSlug = src?.slug;
+    copiedFromSteps = await loadStepsForFlavor(supabase, copiedFromId);
+  }
+
   return (
     <div className="app-page space-y-12">
       {/* Hero strip */}
-      <section className="relative overflow-hidden rounded-2xl border border-zinc-200/80 bg-gradient-to-br from-zinc-100 via-white to-zinc-100 p-6 shadow-xl shadow-black/5 dark:border-white/[0.07] dark:from-zinc-900 dark:via-[#121214] dark:to-black dark:shadow-black/50 sm:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-zinc-200/90 bg-gradient-to-br from-zinc-100 via-white to-zinc-50 p-8 shadow-xl shadow-zinc-900/5 dark:border-zinc-800/90 dark:bg-gradient-to-br dark:from-zinc-900/95 dark:via-zinc-950 dark:to-black dark:shadow-[0_24px_64px_-24px_rgba(0,0,0,0.65)] sm:p-10">
         <div
-          className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-red-600/10 blur-3xl dark:bg-red-500/15"
+          className="pointer-events-none absolute -right-28 -top-28 h-72 w-72 rounded-full bg-red-500/20 blur-3xl dark:bg-red-600/30"
           aria-hidden
         />
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div>
+        <div
+          className="pointer-events-none absolute -bottom-20 left-1/4 h-56 w-56 rounded-full bg-rose-500/15 blur-3xl dark:bg-rose-600/20"
+          aria-hidden
+        />
+        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-4">
             <Link
               href="/admin/humor-flavors"
               className="app-link-back inline-flex items-center gap-1"
             >
               <span aria-hidden>←</span> Humor flavors
             </Link>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl lg:text-5xl">
               {flavor.slug}
             </h1>
-            <p className="mt-2 font-mono text-xs text-zinc-500 dark:text-zinc-500">
+            <p className="font-mono text-xs text-zinc-500 dark:text-zinc-400">
               id {idStr}
             </p>
           </div>
@@ -160,6 +232,11 @@ export default async function HumorFlavorDetailPage({
             >
               Edit flavor
             </Link>
+            <DuplicateFlavorForm
+              sourceId={idStr}
+              sourceSlug={flavor.slug}
+              sourceDescription={flavor.description ?? null}
+            />
             <DeleteFlavorForm flavorId={idStr} />
           </div>
         </div>
@@ -176,30 +253,30 @@ export default async function HumorFlavorDetailPage({
         </div>
         <dl className="grid gap-6 px-5 py-5 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
               Description
             </dt>
-            <dd className="mt-2 text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+            <dd className="mt-2 text-sm leading-relaxed text-zinc-800 dark:text-zinc-100">
               {flavor.description ?? (
-                <span className="text-zinc-400 italic dark:text-zinc-500">
+                <span className="text-zinc-400 italic dark:text-zinc-400">
                   None
                 </span>
               )}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
               Created (UTC)
             </dt>
-            <dd className="mt-2 text-sm text-zinc-800 dark:text-zinc-200">
+            <dd className="mt-2 text-sm text-zinc-800 dark:text-zinc-100">
               {formatWhen(flavor.created_datetime_utc)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
               Last modified (UTC)
             </dt>
-            <dd className="mt-2 text-sm text-zinc-800 dark:text-zinc-200">
+            <dd className="mt-2 text-sm text-zinc-800 dark:text-zinc-100">
               {formatWhen(flavor.modified_datetime_utc)}
             </dd>
           </div>
@@ -213,6 +290,41 @@ export default async function HumorFlavorDetailPage({
         </p>
       ) : null}
 
+      {duplicateState === "success" ? (
+        <p
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-950/35 dark:text-emerald-200"
+          role="status"
+        >
+          Flavor duplicated successfully. Prompt steps were copied in order.
+        </p>
+      ) : null}
+
+      {copiedState ? (
+        <p
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-950/35 dark:text-emerald-200"
+          role="status"
+        >
+          Steps copied from a known-working flavor. Keep type/model IDs as-is and
+          only edit flavor-specific wording in prompts if needed.
+        </p>
+      ) : null}
+
+      <CopyStepsFromFlavorForm
+        targetFlavorId={idStr}
+        targetSlug={flavor.slug}
+        sources={workingCopySources}
+        targetHasSteps={steps.length > 0}
+      />
+
+      {copiedState && copiedFromSlug ? (
+        <CopiedStepsDiff
+          sourceSlug={copiedFromSlug}
+          targetSlug={flavor.slug}
+          sourceSteps={copiedFromSteps}
+          targetSteps={steps}
+        />
+      ) : null}
+
       <HumorFlavorStepsPanel humorFlavorId={idStr} flavorSlug={flavor.slug} />
 
       <FlavorCaptionTestPanel
@@ -220,6 +332,8 @@ export default async function HumorFlavorDetailPage({
         flavorSlug={flavor.slug}
         studySets={studySets}
         recentImages={recentImages}
+        captionPipelineReady={captionPipelineReady}
+        stepCount={steps.length}
       />
 
       <RecentCaptionsForFlavor humorFlavorId={idStr} />

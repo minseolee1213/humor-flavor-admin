@@ -14,7 +14,10 @@ export function CreateFlavorForm() {
   >(createHumorFlavor, null);
 
   return (
-    <form action={formAction} className="app-card max-w-lg space-y-5 p-6 sm:p-8">
+    <form
+      action={formAction}
+      className="app-card-static max-w-lg space-y-5 p-6 sm:p-8"
+    >
       {state?.error ? (
         <p className="app-alert-error" role="alert">
           {state.error}
@@ -23,7 +26,7 @@ export function CreateFlavorForm() {
       <div className="space-y-2">
         <label
           htmlFor="slug"
-          className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
+          className="text-sm font-medium text-zinc-800 dark:text-zinc-300"
         >
           Slug <span className="text-red-600 dark:text-red-400">*</span>
         </label>
@@ -40,7 +43,7 @@ export function CreateFlavorForm() {
       <div className="space-y-2">
         <label
           htmlFor="description"
-          className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
+          className="text-sm font-medium text-zinc-800 dark:text-zinc-300"
         >
           Description
         </label>

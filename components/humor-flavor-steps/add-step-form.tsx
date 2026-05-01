@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo, useState } from "react";
 
 import {
   createHumorFlavorStep,
@@ -20,7 +20,7 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 block text-sm font-medium text-zinc-800 dark:text-zinc-200"
+      className="mb-1.5 block text-sm font-medium text-zinc-800 dark:text-zinc-300"
     >
       {children}
       {req ? <span className="text-red-600 dark:text-red-400"> *</span> : null}
@@ -47,6 +47,19 @@ export function AddHumorFlavorStepForm({
     StepActionState,
     FormData
   >(createHumorFlavorStep, null);
+  const [outputTypeId, setOutputTypeId] = useState("");
+  const [sysPrompt, setSysPrompt] = useState("");
+  const [userPrompt, setUserPrompt] = useState("");
+
+  const jsonWarning = useMemo(() => {
+    const outLabel =
+      outputTypes.find((o) => String(o.id) === outputTypeId)?.label ?? "";
+    const expectsJson = outLabel.toLowerCase().includes("json");
+    const asksForJson = `${sysPrompt} ${userPrompt}`
+      .toLowerCase()
+      .includes("json");
+    return expectsJson && !asksForJson;
+  }, [outputTypeId, outputTypes, sysPrompt, userPrompt]);
 
   return (
     <form action={formAction} className="grid gap-4 sm:grid-cols-2">
@@ -145,6 +158,7 @@ export function AddHumorFlavorStepForm({
           required
           className="app-select"
           defaultValue=""
+          onChange={(e) => setOutputTypeId(e.target.value)}
         >
           <option value="" disabled>
             Select…
@@ -169,26 +183,44 @@ export function AddHumorFlavorStepForm({
       </div>
 
       <div className="sm:col-span-2">
-        <FieldLabel htmlFor="add-sys">System prompt</FieldLabel>
+        <FieldLabel htmlFor="add-sys" required>
+          System prompt
+        </FieldLabel>
         <textarea
           id="add-sys"
           name="llm_system_prompt"
           rows={3}
+          required
           className="app-input min-h-[5rem]"
-          placeholder="Optional"
+          placeholder="Required"
+          onChange={(e) => setSysPrompt(e.target.value)}
         />
       </div>
 
       <div className="sm:col-span-2">
-        <FieldLabel htmlFor="add-user">User prompt</FieldLabel>
+        <FieldLabel htmlFor="add-user" required>
+          User prompt
+        </FieldLabel>
         <textarea
           id="add-user"
           name="llm_user_prompt"
           rows={3}
+          required
           className="app-input min-h-[5rem]"
-          placeholder="Optional"
+          placeholder="Required"
+          onChange={(e) => setUserPrompt(e.target.value)}
         />
       </div>
+
+      {jsonWarning ? (
+        <div
+          className="sm:col-span-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100"
+          role="status"
+        >
+          Selected output type looks JSON-based, but prompts do not explicitly
+          ask for JSON output.
+        </div>
+      ) : null}
 
       <div className="sm:col-span-2 pt-1">
         <button type="submit" disabled={pending} className="app-btn-primary">

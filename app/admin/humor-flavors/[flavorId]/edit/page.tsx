@@ -45,17 +45,15 @@ export default async function EditHumorFlavorPage({
 
   return (
     <div className="app-page">
-      <div className="max-w-lg">
+      <div className="max-w-lg space-y-4">
         <Link
           href={`/admin/humor-flavors/${flavorId}`}
           className="app-link-back"
         >
           ← Back to flavor
         </Link>
-        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-red-600/90 dark:text-red-500/90">
-          Edit
-        </p>
-        <h1 className="app-h1 mt-2">{data.slug}</h1>
+        <p className="app-eyebrow pt-2">Edit</p>
+        <h1 className="app-h1">{data.slug}</h1>
       </div>
       <div className="mt-10">
         <EditFlavorForm flavor={data} />

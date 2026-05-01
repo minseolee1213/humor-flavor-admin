@@ -46,28 +46,34 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl dark:border-white/[0.06] dark:bg-zinc-950/85">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-          <div className="flex min-w-0 flex-1 items-center gap-6 lg:gap-10">
-            <Link
-              href="/admin"
-              className="shrink-0 text-lg font-bold tracking-tight text-zinc-900 dark:text-white"
-            >
-              <span className="text-red-600 dark:text-[var(--accent)]">
-                Humor
-              </span>
-              <span className="text-zinc-800 dark:text-zinc-100">Flavor</span>
-            </Link>
-            <AdminNav />
+    <div className="relative min-h-screen overflow-x-hidden bg-zinc-50 text-zinc-900 dark:bg-gradient-to-b dark:from-slate-950 dark:via-zinc-950 dark:to-black dark:text-zinc-100">
+      <div
+        className="pointer-events-none fixed inset-x-0 top-0 h-[min(44rem,60vh)] bg-gradient-to-b from-red-500/[0.07] via-transparent to-transparent dark:from-red-600/25 dark:via-rose-950/10 dark:to-transparent"
+        aria-hidden
+      />
+      <div className="relative">
+        <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/75 backdrop-blur-xl backdrop-saturate-150 dark:border-zinc-800/60 dark:bg-zinc-950/70">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 flex-1 items-center gap-4 lg:gap-8">
+              <Link
+                href="/admin"
+                className="inline-flex shrink-0 items-center rounded-full border border-zinc-200/90 bg-white/90 px-3.5 py-1.5 shadow-sm dark:border-zinc-700/80 dark:bg-zinc-900/65 dark:shadow-black/20"
+              >
+                <span className="text-sm font-bold tracking-tight">
+                  <span className="text-red-600 dark:text-rose-400">Humor</span>
+                  <span className="text-zinc-900 dark:text-white">Flavor</span>
+                </span>
+              </Link>
+              <AdminNav />
+            </div>
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+              <ThemeToggle />
+              <SignOutButton />
+            </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
-      <main>{children}</main>
+        </header>
+        <main>{children}</main>
+      </div>
     </div>
   );
 }

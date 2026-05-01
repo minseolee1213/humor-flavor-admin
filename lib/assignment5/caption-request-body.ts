@@ -3,23 +3,22 @@
  *
  * POST with `Content-Type: application/json` and camelCase keys only:
  * - `imageId` (UUID string)
- * - `humorFlavorId` (number)
+ * - `humorFlavorId` (UUID string)
  *
  * Do not send snake_case or `profile_id` on this request.
  */
 export type CaptionGenerateRequestBody = {
   imageId: string;
-  humorFlavorId: number;
+  humorFlavorId: string;
 };
 
 export function buildCaptionGenerateRequestBody(input: {
   imageId: string;
   humorFlavorId: string;
 }): CaptionGenerateRequestBody {
-  const humorFlavorId = Number(input.humorFlavorId);
   return {
     imageId: input.imageId,
-    humorFlavorId,
+    humorFlavorId: input.humorFlavorId,
   };
 }
 

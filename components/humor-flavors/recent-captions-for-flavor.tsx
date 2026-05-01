@@ -54,20 +54,25 @@ export async function RecentCaptionsForFlavor({
         </p>
       </div>
       {rows.length === 0 ? (
-        <p className="px-5 py-12 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="px-5 py-12 text-center text-sm text-zinc-500 dark:text-zinc-300">
           No captions stored for this flavor yet. Run a test above if your API
           writes to this table.
         </p>
       ) : (
-        <ul className="divide-y divide-zinc-200/80 dark:divide-white/[0.06]">
+        <ul className="divide-y divide-zinc-200/80 dark:divide-zinc-800">
           {rows.map((row) => (
-            <li key={row.id} className="px-5 py-4 transition hover:bg-zinc-50/80 dark:hover:bg-white/[0.02]">
-              <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+            <li
+              key={row.id}
+              className="px-5 py-4 transition hover:bg-zinc-50/80 dark:bg-zinc-950/40 dark:hover:bg-zinc-800/50"
+            >
+              <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-100">
                 {row.content ?? (
-                  <span className="italic text-zinc-400">(empty content)</span>
+                  <span className="italic text-zinc-400 dark:text-zinc-400">
+                    (empty content)
+                  </span>
                 )}
               </p>
-              <p className="mt-2 font-mono text-xs text-zinc-500">
+              <p className="mt-2 font-mono text-xs text-zinc-500 dark:text-zinc-300">
                 image_id {row.image_id} · {formatWhen(row.created_datetime_utc)}{" "}
                 UTC
               </p>
